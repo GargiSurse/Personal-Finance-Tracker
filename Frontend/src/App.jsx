@@ -11,22 +11,80 @@ function App() {
     JSON.parse(localStorage.getItem("transactions")) || []
   );
 
+  // Using localStorage to persist transactions
+
+  // useEffect(() => {
+  // localStorage.setItem("transactions", JSON.stringify(transactions));
+  // }, [transactions]);
+
+  // const addTransaction = (transaction) => {
+  //   setTransactions([{ ...transaction, id: Date.now() }, ...transactions]);
+  // };
+
+  // const deleteTransaction = (id) => {
+  //   setTransactions(transactions.filter((t) => t.id !== id));
+  // };
+
+  // const editTransaction = (id, updatedTransaction) => {
+  //   setTransactions(
+  //     transactions.map((t) => (t.id === id ? { ...updatedTransaction, id } : t))
+  //   );
+  // };\
+
+  // Using fetch to get transactions from the backend
+
   useEffect(() => {
-    localStorage.setItem("transactions", JSON.stringify(transactions));
-  }, [transactions]);
+    fetch("https://finance-tracker-trz7.onrender.com/transactions")
+      .then((res) => res.json())
+      .then((data) => {
+        setTransactions(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching transactions:", err);
+      });
+  }, []);
 
-  const addTransaction = (transaction) => {
-    setTransactions([{ ...transaction, id: Date.now() }, ...transactions]);
+  const addTransaction = async (tx) => {
+    try {
+      const res = await fetch("https://finance-tracker-trz7.onrender.com/transactions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tx),
+      });
+
+      const newTx = await res.json();
+      setTransactions((prev) => [newTx, ...prev]);
+    } catch (err) {
+      console.error("Error adding transaction:", err);
+    }
   };
 
-  const deleteTransaction = (id) => {
-    setTransactions(transactions.filter((t) => t.id !== id));
+  const deleteTransaction = async (_id) => {
+    try {
+      await fetch(`https://finance-tracker-trz7.onrender.com/transactions/${_id}`, {
+        method: "DELETE",
+      });
+
+      setTransactions((prev) => prev.filter((t) => t._id !== _id));
+    } catch (err) {
+      console.error("Error deleting transaction:", err);
+    }
   };
 
-  const editTransaction = (id, updatedTransaction) => {
-    setTransactions(
-      transactions.map((t) => (t.id === id ? { ...updatedTransaction, id } : t))
-    );
+  const editTransaction = async (_id, tx) => {
+    try {
+      await fetch(`https://finance-tracker-trz7.onrender.com/transactions/${_id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tx),
+      });
+
+      setTransactions((prev) =>
+        prev.map((t) => (t._id !== _id ? t : { ...t, ...tx }))
+      );
+    } catch (err) {
+      console.error("Error deleting transaction:", err);
+    }
   };
 
   return (

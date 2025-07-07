@@ -22,7 +22,7 @@ function TransactionList({ transactions, deleteTransaction, editTransaction }) {
         ) : (
           transactions.map((item) => (
             <TransactionItem
-              key={item.id}
+              key={item._id}
               item={item}
               deleteTransaction={deleteTransaction}
               editTransaction={editTransaction}
@@ -162,13 +162,13 @@ function TransactionItem({ item, deleteTransaction, editTransaction }) {
                   ${item.amount}
                 </span>
                 <span className="sub-text-small" style={{ color: "#666" }}>
-                  {new Date(item.id).toLocaleDateString("en-US", {
+                  {new Date(item._id).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
                   })}
                   {" • "}
-                  {new Date(item.id).toLocaleTimeString("en-US", {
+                  {new Date(item._id).toLocaleTimeString("en-US", {
                     hour: "numeric",
                     minute: "numeric",
                     hour12: true,
@@ -182,7 +182,7 @@ function TransactionItem({ item, deleteTransaction, editTransaction }) {
                 <Edit2 className="sub-container-icon-medium" />
               </Button>
               <Button
-                onClick={() => deleteTransaction(item.id)}
+                onClick={() => deleteTransaction(item._id)}
                 variant="outline"
                 className="trash-button"
               >
